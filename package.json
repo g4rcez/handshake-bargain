@@ -1,0 +1,47 @@
+{
+  "type": "module",
+  "name": "pact-tests",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "version": "1.0.0",
+  "main": "app.ts",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "dev": "tsx src/app.ts",
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/autoload": "^5.0.0",
+    "@fastify/sensible": "^5.0.0",
+    "axios": "1.6.7",
+    "fastify": "^4.0.0",
+    "fastify-cli": "^5.9.0",
+    "fastify-plugin": "^4.0.0",
+    "zod": "3.22.4"
+  },
+  "devDependencies": {
+    "@pact-foundation/pact": "12.2.0",
+    "@types/node": "^20.4.4",
+    "@types/tap": "^15.0.5",
+    "c8": "^7.13.0",
+    "concurrently": "^8.2.2",
+    "fastify-tsconfig": "^2.0.0",
+    "tap": "^16.1.0",
+    "ts-node": "^10.4.0",
+    "tsx": "4.7.0",
+    "typescript": "^5.2.2",
+    "vitest": "1.2.2"
+  },
+  "tap": {
+    "node-arg": [
+      "--no-warnings",
+      "--experimental-loader",
+      "ts-node/esm"
+    ],
+    "coverage": false
+  }
+}
