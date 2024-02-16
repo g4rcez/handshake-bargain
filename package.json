@@ -8,19 +8,30 @@
     "test": "test"
   },
   "scripts": {
-    "dev": "tsx src/app.ts",
+    "dev": "tsx ./src/app.ts",
+    "contract": "tsx ./src/openapi.ts",
     "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anatine/zod-openapi": "2.2.3",
     "@fastify/autoload": "^5.0.0",
     "@fastify/sensible": "^5.0.0",
+    "@stoplight/spectral-cli": "6.11.0",
+    "@stoplight/spectral-core": "1.18.3",
+    "@stoplight/spectral-functions": "1.7.2",
+    "@types/qs": "6.9.11",
     "axios": "1.6.7",
     "fastify": "^4.0.0",
     "fastify-cli": "^5.9.0",
     "fastify-plugin": "^4.0.0",
+    "generate-schema": "2.6.0",
+    "genson-js": "0.0.8",
+    "openapi3-ts": "4.2.1",
+    "qs": "6.11.2",
+    "yaml": "2.3.4",
     "zod": "3.22.4"
   },
   "devDependencies": {

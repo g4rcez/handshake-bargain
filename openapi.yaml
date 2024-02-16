@@ -1,0 +1,65 @@
+openapi: 3.1.0
+info:
+  title: testRootEndpoint
+  version: version
+paths:
+  /:
+    post:
+      parameters:
+        - in: query
+          name: query
+          example: string
+          description: query
+          schema:
+            type: string
+        - in: header
+          name: Content-Type
+          example: application/json
+          description: Content-Type
+          schema:
+            type: string
+        - in: header
+          name: hack
+          example: The planet
+          description: hack
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+              required:
+                - body
+      responses:
+        "200":
+          description: Response 200 - testRootEndpoint
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  root:
+                    type: boolean
+                required:
+                  - root
+                examples:
+                  - root: true
+components:
+  schemas: {}
+  responses: {}
+  parameters: {}
+  examples: {}
+  requestBodies: {}
+  headers: {}
+  securitySchemes: {}
+  links: {}
+  callbacks: {}
+tags:
+  - name: testRootEndpoint
+    description: testRootEndpoint
+servers:
+  - url: http://localhost:3000
