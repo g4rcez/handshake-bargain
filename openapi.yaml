@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: testRootEndpoint
+  title: app
   version: version
 paths:
   /:
@@ -36,7 +36,7 @@ paths:
                 - body
       responses:
         "200":
-          description: Response 200 - testRootEndpoint
+          description: Response 200 - PostRequest
           content:
             application/json:
               schema:
@@ -48,6 +48,43 @@ paths:
                   - root
                 examples:
                   - root: true
+    get:
+      parameters:
+        - in: query
+          name: queryString
+          example: string
+          description: queryString
+          schema:
+            type: string
+        - in: header
+          name: Content-Type
+          example: application/json
+          description: Content-Type
+          schema:
+            type: string
+        - in: header
+          name: hack
+          example: The planet
+          description: hack
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Response 400 - GetRequest
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - errors
+                examples:
+                  - errors:
+                      - Required
 components:
   schemas: {}
   responses: {}
@@ -59,7 +96,9 @@ components:
   links: {}
   callbacks: {}
 tags:
-  - name: testRootEndpoint
-    description: testRootEndpoint
+  - name: PostRequest
+    description: PostRequest
+  - name: GetRequest
+    description: GetRequest
 servers:
-  - url: http://localhost:3000
+  - url: http://0.0.0.0:4000

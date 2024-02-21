@@ -1,5 +1,4 @@
 {
-  "extends": "fastify-tsconfig",
   "compilerOptions": {
     "lib": ["ESNext"],
     "target": "ESNext",
