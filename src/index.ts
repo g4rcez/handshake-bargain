@@ -1,29 +1,54 @@
+import { extendZodWithOpenApi } from "@anatine/zod-openapi";
 import stoplight from "@stoplight/spectral-core";
 import { truthy } from "@stoplight/spectral-functions";
-import { OpenApiBuilder as Oas31, OpenAPIObject as OpenApi31, ParameterObject, PathsObject } from "openapi3-ts/oas31";
-import { OpenApiBuilder as Oas3, OpenAPIObject as OpenApi3 } from "openapi3-ts/oas31";
-import { z } from "zod";
-import { extendZodWithOpenApi } from "@anatine/zod-openapi";
 import axios, { AxiosError } from "axios";
 import { createSchema } from "genson-js"; // object => Json Schema
-import { stringify as yaml } from "yaml";
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+    OpenApiBuilder as Oas31,
+    OpenAPIObject as OpenApi31,
+    OpenAPIObject as OpenApi3,
+    OperationObject,
+    ParameterObject,
+    PathItemObject,
+    PathsObject,
+    ResponseObject,
+    ResponsesObject,
+    ServerObject,
+} from "openapi3-ts/oas31";
+import { stringify as yaml } from "yaml";
+import { z } from "zod";
 
 const Spectral = stoplight.Spectral;
 
 const unique = <T>(array: T[], key?: keyof T) => {
     if (key === undefined) return [...new Set(array).values()];
     const seen = new Set();
-    return Array.isArray(key) ? [...new Set(key)] : array.filter((el) => {
-        const duplicate = key ? seen.has(el[key]) : seen.has(key);
-        if (!!key) {
-            if (!duplicate) {
-                seen.add(el[key]);
-            }
-        }
-        return !duplicate;
-    });
+    return Array.isArray(key)
+        ? [...new Set(key)]
+        : array.filter((el) => {
+              const duplicate = key ? seen.has(el[key]) : seen.has(key);
+              if (!!key) {
+                  if (!duplicate) {
+                      seen.add(el[key]);
+                  }
+              }
+              return !duplicate;
+          });
+};
+
+const json = <T>(cookie: string): T => {
+    if (cookie === "") {
+        return {} as T;
+    }
+    return document.cookie
+        .split("; ")
+        .map((v) => v.split("="))
+        .reduce((acc: any, v: any) => {
+            acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+            return acc;
+        }, {});
 };
 
 type HttpMethod = "get" | "post" | "patch" | "put" | "delete";
@@ -35,6 +60,10 @@ type Entries = <T>(t: T) => [keyof T, T[keyof T]][];
 const entries: Entries = Object.entries as any;
 
 export namespace HandshakeBargain {
+    type ServerUrl = `http://${string}` | `https://${string}`;
+
+    type Info = { name: string; servers?: ServerUrl[] };
+
     type Contract = {
         url: string;
         name: string;
@@ -51,9 +80,7 @@ export namespace HandshakeBargain {
         response: { status: number };
     };
 
-    export const createRequest = async (
-        props: Contract,
-    ): Promise<ContractResult> => {
+    export const createRequest = async (props: Contract): Promise<ContractResult> => {
         try {
             const response = await axios({
                 method: props.method,
@@ -99,96 +126,96 @@ export namespace HandshakeBargain {
                     throw validation?.error;
                 }
             }
-            const c = new Error(
-                `Unexpected response status - ${error.response?.status ?? 0}`,
-            );
+            const c = new Error(`Unexpected response status - ${error.response?.status ?? 0}`);
             c.cause = error;
             throw c;
         }
     };
 
-
-    const fetchParameters = (
-        o: object | undefined,
-        type: ParameterObject["in"],
-    ): ParameterObject[] =>
+    const fetchParameters = (o: object | undefined, type: ParameterObject["in"]): ParameterObject[] =>
         !o
             ? []
             : entries(o).reduce<ParameterObject[]>(
-                (acc, [key, value]) => [
-                    ...acc,
-                    {
-                        in: type,
-                        name: key,
-                        example: value,
-                        description: key,
-                        schema: createSchema(o[key]),
-                    },
-                ],
-                [],
-            );
+                  (acc, [key, value]) => [
+                      ...acc,
+                      {
+                          in: type,
+                          name: key,
+                          example: value,
+                          description: key,
+                          schema: createSchema(o[key]),
+                      },
+                  ],
+                  [],
+              );
 
     type OpenApiGenerated = { yaml: string; json: OpenApi31 | OpenApi3 };
 
-    const parse = ({
-                       response,
-                       data,
-                       request,
-                   }: Awaited<ReturnType<typeof createRequest>>): OpenApiGenerated => {
+    const parse = ({ response, data, request }: Awaited<ReturnType<typeof createRequest>>): OpenApiGenerated => {
         const contentType = request.headers?.["Content-Type"] || "application/json";
         const spec = new Oas31();
-        spec
-            .addTitle(request.name)
-            .addServer({ url: request.url })
-            .addTag({ name: request.name, description: request.name });
+        const server = { url: request.url };
+        spec.addTitle(request.name).addServer(server).addTag({ name: request.name, description: request.name });
         const parameters: ParameterObject[] = [
             ...fetchParameters(request.queryString, "query"),
             ...fetchParameters(request.headers, "header"),
+            ...fetchParameters(json(request.headers?.cookies ?? ""), "cookie"),
         ];
         spec.addPath(new URL(request.url).pathname, {
             [request.method]: {
                 parameters: parameters.length > 0 ? parameters : undefined,
+                tags: [request.name],
+                servers: [server],
+                description: request.name,
                 requestBody: request.body
                     ? {
-                        content: {
-                            [contentType]: {
-                                schema: createSchema(request.body),
-                            },
-                        },
-                    }
+                          content: {
+                              [contentType]: {
+                                  schema: createSchema(request.body),
+                                  examples: { value: { value: JSON.stringify(request.body) } }
+                              },
+                          },
+                      }
                     : undefined,
                 responses: {
                     [response.status]: {
                         description: `Response ${response.status} - ${request.name}`,
                         content: {
                             [contentType]: {
-                                schema: {
-                                    ...(createSchema(data) as any),
-                                    examples: [data],
-                                },
+                                schema: createSchema(data),
+                                examples: { value: { value: JSON.stringify(data) } },
                             },
                         },
-                    },
-                },
-            },
+                    } as ResponseObject,
+                } as ResponsesObject,
+            } as OperationObject,
         });
         return { yaml: yaml(spec.rootDoc), json: JSON.parse(JSON.stringify(spec.rootDoc)) };
     };
 
-    type BuildAllArgs = () => Promise<ContractResult>
+    type BuildAllArgs = () => Promise<ContractResult>;
 
-    const aggregateAll = (all: OpenApiGenerated[], Oas: typeof Oas31 | typeof Oas3) => {
-        const builder = new Oas();
+    const getMethodFromPaths = (paths: PathItemObject): HttpMethod => Object.keys(paths)[0] as HttpMethod;
+
+    const aggregateAll = (all: OpenApiGenerated[], info: Info) => {
+        const builder = new Oas31();
         const paths = new Map<string, PathsObject>();
-        all.forEach(x => {
-            const servers = x.json.servers ?? [];
+        const defaultServers = (info.servers ?? []).map((url): ServerObject => ({ url }));
+        all.forEach((x) => {
+            const servers = [...defaultServers, ...(x.json.servers ?? [])];
             const tags = x.json.tags ?? [];
-            servers.forEach(server => builder.addServer(server));
-            tags.forEach(tag => builder.addTag(tag));
+            servers.forEach((server) => builder.addServer(server));
+            tags.forEach((tag) => builder.addTag(tag));
             const p = x.json.paths || {};
             const pathKey = Object.keys(p)[0];
             const current = paths.get(pathKey) || {};
-            paths.set(pathKey, { ...current, ...p[pathKey] } as PathsObject);
+            const method = getMethodFromPaths(p[pathKey]);
+            const newRequest = p[pathKey];
+            if (newRequest[method]) {
+                const currentServers = p[pathKey].servers ?? [];
+                newRequest[method]!.servers = [...currentServers, ...defaultServers];
+            }
+            paths.set(pathKey, { ...current, ...newRequest } as PathsObject);
         });
         paths.forEach((path, key) => {
             builder.addPath(key, path);
@@ -198,10 +225,7 @@ export namespace HandshakeBargain {
         return builder.getSpecAsYaml();
     };
 
-    type Info = { name: string; version?: "3" | "3.1" }
-
     export const buildAll = async (info: Info, ...requests: BuildAllArgs[]) => {
-        const builder = info.version === "3" ? Oas3 : Oas31;
         const schemas: OpenApiGenerated[] = [];
         const errors: Error[] = [];
         for (let i = 0; i < requests.length; i++) {
@@ -211,10 +235,11 @@ export namespace HandshakeBargain {
                 const parsed = parse(response);
                 schemas.push(parsed);
             } catch (e: any) {
+                console.error(e);
                 errors.push(e);
             }
         }
-        const openapi = aggregateAll(schemas, builder);
+        const openapi = aggregateAll(schemas, info);
         const spectral = new Spectral();
         spectral.setRuleset({
             rules: {
@@ -231,6 +256,8 @@ export namespace HandshakeBargain {
             const isAbsolute = info.name.startsWith("/") || info.name.startsWith("./");
             const filePath = isAbsolute ? info.name : path.join(path.resolve(process.cwd(), info.name));
             await fs.writeFile(filePath, openapi, "utf-8");
+        } else {
+            console.error(JSON.stringify({ lint, errors, hasErrors }, null, 4));
         }
         return { schemas, errors, hasErrors, openapi, lint };
     };

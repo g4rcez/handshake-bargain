@@ -1,0 +1,14 @@
+# curl -X 'POST'
+#  'http://localhost:1337/'
+#  -H 'accept: application/json'
+#  -d ''
+POST http://localhost:1337/api
+accept: application/json
+Content-Type: application/json
+
+{
+  "root": true
+}
+
+###
+

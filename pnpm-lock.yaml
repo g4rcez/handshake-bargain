@@ -8,6 +8,9 @@ dependencies:
   '@anatine/zod-openapi':
     specifier: 2.2.3
     version: 2.2.3(openapi3-ts@4.2.1)(zod@3.22.4)
+  '@fastify/http-proxy':
+    specifier: 9.4.0
+    version: 9.4.0
   '@fastify/swagger':
     specifier: 8.14.0
     version: 8.14.0
@@ -55,6 +58,9 @@ devDependencies:
   fastify:
     specifier: 4.0.0
     version: 4.0.0
+  prettier:
+    specifier: 3.2.5
+    version: 3.2.5
   tap:
     specifier: 16.1.0
     version: 16.1.0(ts-node@10.4.0)(typescript@5.2.2)
@@ -519,15 +525,44 @@ packages:
       fast-uri: 2.3.0
     dev: true
 
+  /@fastify/busboy@2.1.0:
+    resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
+    engines: {node: '>=14'}
+    dev: false
+
   /@fastify/error@3.4.1:
     resolution: {integrity: sha512-wWSvph+29GR783IhmvdwWnN4bUxTD01Vm5Xad4i7i1VuAOItLvbPAb69sb0IQ2N57yprvhNIwAP5B6xfKTmjmQ==}
-    dev: true
 
   /@fastify/fast-json-stringify-compiler@3.0.1:
     resolution: {integrity: sha512-X9BL9/N7827M9UTBVsa5G3xOoD3MQ6EqX+D6EyJyF8LdvWTHQJ//BDN4FAEaGZUA2sL+GEMC6+KNjHESnPwQuw==}
     dependencies:
       fast-json-stringify: 4.2.0
     dev: true
+
+  /@fastify/http-proxy@9.4.0:
+    resolution: {integrity: sha512-oXdvWBETRI2fJYJnRfFP/qJ6fQddUJz47X71WP7SkHdm4D5OejlNwrgnEJLUS5Kr4BSXHE5Nq5K6mmUlkivKiA==}
+    dependencies:
+      '@fastify/reply-from': 9.7.0
+      fast-querystring: 1.1.2
+      fastify-plugin: 4.5.1
+      ws: 8.16.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false
+
+  /@fastify/reply-from@9.7.0:
+    resolution: {integrity: sha512-/F1QBl3FGlTqStjmiuoLRDchVxP967TZh6FZPwQteWhdLsDec8mqSACE+cRzw6qHUj3v9hfdd7JNgmb++fyFhQ==}
+    dependencies:
+      '@fastify/error': 3.4.1
+      end-of-stream: 1.4.4
+      fast-content-type-parse: 1.1.0
+      fast-querystring: 1.1.2
+      fastify-plugin: 4.5.1
+      pump: 3.0.0
+      tiny-lru: 11.2.5
+      undici: 5.28.3
+    dev: false
 
   /@fastify/send@2.1.0:
     resolution: {integrity: sha512-yNYiY6sDkexoJR0D8IDy3aRP3+L4wdqCpvx5WP+VtEU58sn7USmKynBzDQex5X42Zzvw2gNzzYgP90UfWShLFA==}
@@ -1841,7 +1876,6 @@ packages:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
     dependencies:
       once: 1.4.0
-    dev: true
 
   /es-abstract@1.22.4:
     resolution: {integrity: sha512-vZYJlk2u6qHYxBOTjAeg7qUxHdNfih64Uu2J8QqWgXZ2cri0ZpJAkzDUK/q593+mvKwlxyaxr6F1Q+3LKoQRgg==}
@@ -2121,6 +2155,10 @@ packages:
       type: 2.7.2
     dev: true
 
+  /fast-content-type-parse@1.1.0:
+    resolution: {integrity: sha512-fBHHqSTFLVnR61C+gltJuE5GkVQMV0S2nqUO8TJ+5Z3qAKG8vAx4FKai1s5jq/inV1+sREynIWSuQ6HgoSXpDQ==}
+    dev: false
+
   /fast-copy@3.0.1:
     resolution: {integrity: sha512-Knr7NOtK3HWRYGtHoJrjkaWepqT8thIVGAwt0p0aUs1zqkAzXZV4vo9fFNwyb5fcqK1GKYFYxldQdIDVKhUAfA==}
     dev: true
@@ -2146,6 +2184,12 @@ packages:
 
   /fast-memoize@2.5.2:
     resolution: {integrity: sha512-Ue0LwpDYErFbmNnZSF0UH6eImUwDmogUO1jyE+JbN2gsQz/jICm1Ve7t9QT0rNSsfJt+Hs4/S3GnsDVjL4HVrw==}
+    dev: false
+
+  /fast-querystring@1.1.2:
+    resolution: {integrity: sha512-g6KuKWmFXc0fID8WWH0jit4g0AGBoJhCkJMb1RmbsSEUNvQ+ZC8D6CUZ+GtF8nMzSPXnhiePyyqqipzNNEnHjg==}
+    dependencies:
+      fast-decode-uri-component: 1.0.1
     dev: false
 
   /fast-redact@3.3.0:
@@ -3347,7 +3391,6 @@ packages:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
       wrappy: 1.0.2
-    dev: true
 
   /onetime@6.0.0:
     resolution: {integrity: sha512-1FlR+gjXK7X+AsAHso35MnyN5KqGwJRi/31ft6x0M194ht7S+rWAvd7PHss9xSKMzE0asv1pyIHaJYq+BbacAQ==}
@@ -3573,6 +3616,12 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
+
   /pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -3622,7 +3671,6 @@ packages:
     dependencies:
       end-of-stream: 1.4.4
       once: 1.4.0
-    dev: true
 
   /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -4257,6 +4305,11 @@ packages:
       next-tick: 1.1.0
     dev: true
 
+  /tiny-lru@11.2.5:
+    resolution: {integrity: sha512-JpqM0K33lG6iQGKiigcwuURAKZlq6rHXfrgeL4/I8/REoyJTGU+tEMszvT/oTRVHG2OiylhGDjqPp1jWMlr3bw==}
+    engines: {node: '>=12'}
+    dev: false
+
   /tiny-lru@8.0.2:
     resolution: {integrity: sha512-ApGvZ6vVvTNdsmt676grvCkUCGwzG9IqXma5Z07xJgiC5L7akUMof5U8G2JTI9Rz/ovtVhJBlY6mNhEvtjzOIg==}
     engines: {node: '>=6'}
@@ -4446,6 +4499,13 @@ packages:
   /underscore@1.12.1:
     resolution: {integrity: sha512-hEQt0+ZLDVUMhebKxL4x1BTtDY7bavVofhZ9KZ4aI26X9SRaE+Y3m83XUL1UP2jn8ynjndwCCpEHdUG+9pP1Tw==}
     dev: true
+
+  /undici@5.28.3:
+    resolution: {integrity: sha512-3ItfzbrhDlINjaP0duwnNsKpDQk3acHI3gVJ1z4fmwMK31k5G9OVIAMLSIaP6w4FaGkaAkN6zaQO9LUvZ1t7VA==}
+    engines: {node: '>=14.0'}
+    dependencies:
+      '@fastify/busboy': 2.1.0
+    dev: false
 
   /unicode-length@2.1.0:
     resolution: {integrity: sha512-4bV582zTV9Q02RXBxSUMiuN/KHo5w4aTojuKTNT96DIKps/SIawFp7cS5Mu25VuY1AioGXrmYyzKZUzh8OqoUw==}
@@ -4712,7 +4772,6 @@ packages:
 
   /wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
-    dev: true
 
   /write-file-atomic@3.0.3:
     resolution: {integrity: sha512-AvHcyZ5JnSfq3ioSyjrBkH9yW4m7Ayk8/9My/DD9onKeu/94fwrMocemO2QAJFAlnnDN+ZDS+ZjAR5ua1/PV/Q==}
@@ -4722,6 +4781,19 @@ packages:
       signal-exit: 3.0.7
       typedarray-to-buffer: 3.1.5
     dev: true
+
+  /ws@8.16.0:
+    resolution: {integrity: sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
 
   /y18n@4.0.3:
     resolution: {integrity: sha512-JKhqTOwSrqNA1NY5lSztJ1GrBiUodLMmIZuLiDaMRJ+itFd+ABVE8XBjOvIWL+rSqNDC74LCSFmlb/U4UZ4hJQ==}

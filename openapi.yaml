@@ -6,24 +6,20 @@ paths:
   /:
     post:
       parameters:
-        - in: query
-          name: query
-          example: string
-          description: query
-          schema:
-            type: string
         - in: header
           name: Content-Type
           example: application/json
           description: Content-Type
           schema:
             type: string
-        - in: header
-          name: hack
-          example: The planet
-          description: hack
-          schema:
-            type: string
+      tags:
+        - PostRequest
+      servers:
+        - &a1
+          url: http://localhost:4000
+        - &a2
+          url: http://0.0.0.0:1337
+      description: PostRequest
       requestBody:
         content:
           application/json:
@@ -34,6 +30,9 @@ paths:
                   type: string
               required:
                 - body
+            examples:
+              value:
+                value: '{"body":"string"}'
       responses:
         "200":
           description: Response 200 - PostRequest
@@ -46,14 +45,15 @@ paths:
                     type: boolean
                 required:
                   - root
-                examples:
-                  - root: true
+              examples:
+                value:
+                  value: '{"root":true}'
     get:
       parameters:
         - in: query
-          name: queryString
-          example: string
-          description: queryString
+          name: QUALQUER_COISA
+          example: TYPE_IN_QUERY_STRING_GET
+          description: QUALQUER_COISA
           schema:
             type: string
         - in: header
@@ -62,12 +62,12 @@ paths:
           description: Content-Type
           schema:
             type: string
-        - in: header
-          name: hack
-          example: The planet
-          description: hack
-          schema:
-            type: string
+      tags:
+        - GetRequest
+      servers:
+        - *a1
+        - *a2
+      description: GetRequest
       responses:
         "400":
           description: Response 400 - GetRequest
@@ -82,9 +82,9 @@ paths:
                       type: string
                 required:
                   - errors
-                examples:
-                  - errors:
-                      - Required
+              examples:
+                value:
+                  value: '{"errors":["Required"]}'
 components:
   schemas: {}
   responses: {}
@@ -101,4 +101,6 @@ tags:
   - name: GetRequest
     description: GetRequest
 servers:
-  - url: http://0.0.0.0:4000
+  - *a1
+  - *a2
+  - url: http://0.0.0.0:3000

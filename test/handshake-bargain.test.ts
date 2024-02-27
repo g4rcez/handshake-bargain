@@ -15,15 +15,15 @@ describe("testador", async () => {
     });
 
     test("Test buildAll method", async () => {
-        await HandshakeBargain.buildAll({ name: "openapi.yaml" },
+        await HandshakeBargain.buildAll(
+            { name: "openapi.yaml", servers: ["http://localhost:4000", "http://0.0.0.0:1337"] },
             async () => {
                 const result = await HandshakeBargain.createRequest({
                     name: "PostRequest",
                     method: "post",
                     url: "http://0.0.0.0:3000",
                     body: { body: "string" },
-                    queryString: { query: "string" },
-                    headers: { "Content-Type": "application/json", hack: "The planet" },
+                    headers: { "Content-Type": "application/json" },
                     response: {
                         200: {
                             body: z.object({ root: z.literal(true) }),
@@ -33,14 +33,15 @@ describe("testador", async () => {
                 expect(result.data.root).toBe(true);
                 return result;
             },
-            () => HandshakeBargain.createRequest({
-                name: "GetRequest",
-                method: "get",
-                url: "http://0.0.0.0:3000",
-                queryString: { queryString: "string" },
-                headers: { "Content-Type": "application/json", hack: "The planet" },
-                response: { 400: { body: z.object({ errors: z.array(z.string()) }) } },
-            }),
+            () =>
+                HandshakeBargain.createRequest({
+                    name: "GetRequest",
+                    method: "get",
+                    url: "http://0.0.0.0:3000",
+                    queryString: { QUALQUER_COISA: "TYPE_IN_QUERY_STRING_GET" },
+                    headers: { "Content-Type": "application/json" },
+                    response: { 400: { body: z.object({ errors: z.array(z.string()) }) } },
+                }),
         );
     });
 });

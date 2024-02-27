@@ -10,8 +10,10 @@
     "test": "test"
   },
   "scripts": {
-    "watch": "vitest watch",
-    "test": "vitest"
+    "openapi": "tsx src/openapi-server.ts",
+    "mock": "CLI_MODE=true tsx test/test-server.ts",
+    "test": "vitest",
+    "watch": "vitest watch"
   },
   "keywords": [
     "contract",
@@ -23,6 +25,7 @@
   ],
   "dependencies": {
     "@anatine/zod-openapi": "2.2.3",
+    "@fastify/http-proxy": "9.4.0",
     "@fastify/swagger": "8.14.0",
     "@fastify/swagger-ui": "3.0.0",
     "@stoplight/spectral-core": "1.18.3",
@@ -40,6 +43,7 @@
     "@types/qs": "6.9.11",
     "c8": "7.13.0",
     "fastify": "4.0.0",
+    "prettier": "3.2.5",
     "tap": "16.1.0",
     "ts-node": "10.4.0",
     "tsx": "4.7.0",
